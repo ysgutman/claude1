@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도덕 교육 e-교과서</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        nav {
+            width: 200px;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+        #claude-interface {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
+        #claude-response {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#home">홈</a></li>
+            <li><a href="#info-ethics">정보윤리</a></li>
+            <li><a href="#science-ethics">과학윤리</a></li>
+            <li><a href="#life-ethics">생명윤리</a></li>
+            <li><a href="#thoughts">자신의 생각 적기</a></li>
+            <li><a href="#ask-claude">Claude에게 질문하기</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h1>도덕 교육 e-교과서에 오신 것을 환영합니다</h1>
+        <p>왼쪽에서 주제를 선택하여 자세히 알아보세요.</p>
+        
+        <div id="claude-interface">
+            <h2>Claude에게 질문하기</h2>
+            <textarea id="user-question" rows="4" cols="50" placeholder="Claude에게 질문하세요..."></textarea>
+            <br>
+            <button onclick="askClaude()">질문 제출</button>
+            <div id="claude-response"></div>
+        </div>
+    </main>
+
+    <script>
+        const API_KEY = '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'; // 실제 API 키로 교체하세요
+        const API_URL = 'https://api.anthropic.com/v1/conversations';
+
+        async function askClaude() {
+            const question = document.getElementById('user-question').value;
+            const responseDiv = document.getElementById('claude-response');
+            responseDiv.innerHTML = '답변을 기다리는 중...';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-2',
+                        messages: [
+                            { role: 'user', content: question }
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API 요청 실패');
+                }
+
+                const data = await response.json();
+                responseDiv.innerHTML = data.choices[0].message.content;
+            } catch (error) {
+                console.error('Error:', error);
+                responseDiv.innerHTML = '오류가 발생했습니다. 다시 시도해 주세요.';
+            }
+        }
+    </script>
+</body>
+</html>
